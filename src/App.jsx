@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import SplashScreen from './components/SplashScreen'
 import HyperspeedBackdrop from './components/HyperspeedBackdrop'
 import './App.css'
@@ -132,7 +132,6 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [parallax, setParallax] = useState({ x: 0, y: 0 })
   const [floatTick, setFloatTick] = useState(0)
-  const [brandsServed, setBrandsServed] = useState(0)
   const totalServices = services.length
 
   const navClose = () => setIsMenuOpen(false)
@@ -149,8 +148,6 @@ function App() {
     const ry = ((event.clientX - cx) / (rect.width / 2)) * 8
     setTilt({ rx, ry })
   }
-
-  const statNum = useMemo(() => `${brandsServed}+`, [brandsServed])
 
   useEffect(() => {
     document.body.classList.add('splash-active')
@@ -240,55 +237,6 @@ function App() {
     return () => observer.disconnect()
   }, [])
 
-  useEffect(() => {
-    const statEl = document.querySelector('[data-target="200"]')
-    if (!statEl) {
-      return undefined
-    }
-
-    let hasAnimated = false
-    let frameId
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting || hasAnimated) {
-            return
-          }
-
-          hasAnimated = true
-          const target = 200
-          const duration = 1600
-          const start = performance.now()
-
-          const tick = (now) => {
-            const elapsed = now - start
-            const progress = Math.min(elapsed / duration, 1)
-            const eased = 1 - (1 - progress) ** 3
-            setBrandsServed(Math.round(target * eased))
-
-            if (progress < 1) {
-              frameId = window.requestAnimationFrame(tick)
-            }
-          }
-
-          frameId = window.requestAnimationFrame(tick)
-          observer.unobserve(entry.target)
-        })
-      },
-      { threshold: 0.5 },
-    )
-
-    observer.observe(statEl)
-
-    return () => {
-      observer.disconnect()
-      if (frameId) {
-        window.cancelAnimationFrame(frameId)
-      }
-    }
-  }, [])
-
   return (
     <>
       {isSplashVisible ? <SplashScreen isFading={isSplashFading} /> : null}
@@ -331,10 +279,6 @@ function App() {
         <div className="blob blob-1" style={{ transform: `translate(${parallax.x * 8}px, ${parallax.y * 8}px)` }} />
         <div className="blob blob-2" style={{ transform: `translate(${parallax.x * 12}px, ${parallax.y * 12}px)` }} />
         <div className="blob blob-3" style={{ transform: `translate(${parallax.x * 16}px, ${parallax.y * 16}px)` }} />
-
-        <div className="hero-badge">
-          ✦ <span>Trusted by 200+ Brands</span> across 15 Countries
-        </div>
 
         <h1>
           We Grow Your Business
@@ -544,27 +488,6 @@ function App() {
         </div>
       </section>
 
-      <div className="stats-strip">
-        <div className="stat-item reveal">
-          <div className="stat-num" data-target="200">
-            {statNum}
-          </div>
-          <div className="stat-label">Brands Served</div>
-        </div>
-        <div className="stat-item reveal reveal-delay-1">
-          <div className="stat-num">15+</div>
-          <div className="stat-label">Countries</div>
-        </div>
-        <div className="stat-item reveal reveal-delay-2">
-          <div className="stat-num">98%</div>
-          <div className="stat-label">Client Retention</div>
-        </div>
-        <div className="stat-item reveal reveal-delay-3">
-          <div className="stat-num">8yr</div>
-          <div className="stat-label">In the Industry</div>
-        </div>
-      </div>
-
       <section id="services">
         <div className="section-label reveal">What We Do</div>
         <h2 className="section-title reveal reveal-delay-1">
@@ -690,10 +613,6 @@ function App() {
               </defs>
             </svg>
           </div>
-          <div className="about-card about-float-card">
-            <div className="afc-num">8+</div>
-            <div className="afc-label">Years of Digital Excellence</div>
-          </div>
         </div>
 
         <div className="about-text">
@@ -750,13 +669,6 @@ function App() {
             <h4>Full-Funnel Thinking</h4>
             <p>We don&apos;t just drive traffic - we engineer customer journeys that convert and retain.</p>
           </div>
-          <div className="why-card reveal reveal-delay-3" style={{ '--accent': 'rgba(249,115,22,0.08)' }}>
-            <div className="why-icon" style={{ background: 'rgba(249,115,22,0.12)', animationDelay: '1.5s' }}>
-              🌐
-            </div>
-            <h4>Global Perspective</h4>
-            <p>Operating across 15 countries, we bring international insight with local precision.</p>
-          </div>
           <div className="why-card reveal reveal-delay-1" style={{ '--accent': 'rgba(59,130,246,0.08)' }}>
             <div className="why-icon" style={{ background: 'rgba(59,130,246,0.12)', animationDelay: '2s' }}>
               🔒
@@ -769,7 +681,7 @@ function App() {
               🤝
             </div>
             <h4>Long-Term Partnership</h4>
-            <p>98% of our clients renew. We build relationships, not just campaigns.</p>
+            <p>Clients return because we build relationships, not just campaigns.</p>
           </div>
         </div>
       </section>
